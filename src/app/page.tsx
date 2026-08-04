@@ -39,16 +39,17 @@ export default function HomePage() {
               <p className="mt-6 text-sm italic text-ink-dim">&ldquo;{site.motto}&rdquo;</p>
             </div>
             <div className="flex justify-center lg:justify-end">
-              <div className="card-panel flex w-full max-w-sm flex-col items-center p-8">
+              <div className="card-panel flex w-full max-w-md flex-col items-center p-6 sm:p-10">
                 <Image
                   src="/brand/F3_new_logo.png"
-                  alt="F3 Nation logo"
-                  width={200}
-                  height={200}
-                  className="h-40 w-40 object-contain sm:h-48 sm:w-48"
+                  alt="F3 Lincoln logo"
+                  width={480}
+                  height={480}
+                  className="h-64 w-64 object-contain sm:h-80 sm:w-80"
+                  sizes="(max-width: 640px) 256px, 320px"
                   priority
                 />
-                <p className="mt-4 text-center text-sm text-ink-dim">
+                <p className="mt-5 text-center text-sm text-ink-dim">
                   Free · Outdoor · Peer-led · Always ends with a COT
                 </p>
               </div>
