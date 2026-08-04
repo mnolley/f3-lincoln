@@ -1,3 +1,4 @@
+import { workoutStartIso } from "@/lib/format";
 import type { SlackBlock, SlackMessage } from "./types";
 import { resolveUserName, type UserDirectory } from "./users";
 
@@ -290,11 +291,22 @@ export function parseBackblastMessage(message: SlackMessage): ParsedBackblast | 
       ? fngField.split(/[,\s]+/).filter(Boolean).length
       : 0);
 
-  // Prefer Slack message ts for ISO date when DATE missing
+  // Workout "When" = DATE from Paxminer at 5:30 AM Central (not Slack post time)
   const tsMs = Number.parseFloat(message.ts) * 1000;
-  const dateIso = dateField
-    ? new Date(`${dateField}T12:00:00`).toISOString()
-    : new Date(tsMs).toISOString();
+  let dateIso: string;
+  const ymd = dateField.trim().match(/^\d{4}-\d{2}-\d{2}$/)?.[0];
+  if (ymd) {
+    dateIso = workoutStartIso(ymd);
+  } else {
+    // Fall back to post day in Central, still at 5:30 AM
+    const postYmd = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Chicago",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(tsMs)); // en-CA → YYYY-MM-DD
+    dateIso = workoutStartIso(postYmd);
+  }
 
   const sections = splitBodySections(body);
 

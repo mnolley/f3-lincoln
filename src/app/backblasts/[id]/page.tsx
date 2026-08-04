@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
-import { formatPostDate } from "@/lib/format";
+import { formatWorkoutWhen } from "@/lib/format";
 import { fetchSlackBackblastById } from "@/lib/slack/fetch-backblasts";
 
 type Props = { params: Promise<{ id: string }> };
@@ -42,7 +42,7 @@ export default async function BackblastDetailPage({ params }: Props) {
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Meta label="When" value={formatPostDate(post.date)} />
+        <Meta label="When" value={formatWorkoutWhen(post.date)} />
         <Meta label="AO" value={post.ao} />
         <Meta label="QIC" value={post.qic} />
         <Meta

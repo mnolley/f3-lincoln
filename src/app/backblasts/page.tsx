@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageShell } from "@/components/PageShell";
-import { formatPostDate, formatShortDate } from "@/lib/format";
+import { formatShortDate, formatWorkoutWhen } from "@/lib/format";
 import { fetchSlackBackblasts } from "@/lib/slack/fetch-backblasts";
 
 export const metadata: Metadata = {
@@ -64,8 +64,8 @@ export default async function BackblastsPage() {
                   <dd className="text-ink">{post.qic}</dd>
                 </div>
                 <div>
-                  <dt className="text-ink-dim">Posted</dt>
-                  <dd className="text-ink">{formatPostDate(post.date)}</dd>
+                  <dt className="text-ink-dim">When</dt>
+                  <dd className="text-ink">{formatWorkoutWhen(post.date)}</dd>
                 </div>
               </dl>
 
