@@ -39,14 +39,14 @@ export default function HomePage() {
               <p className="mt-6 text-sm italic text-ink-dim">&ldquo;{site.motto}&rdquo;</p>
             </div>
             <div className="flex justify-center lg:justify-end">
-              <div className="card-panel flex w-full max-w-md flex-col items-center p-6 sm:p-10">
+              <div className="card-panel flex w-full max-w-lg flex-col items-center p-6 sm:p-8">
                 <Image
                   src="/brand/F3_new_logo.png"
                   alt="F3 Lincoln logo"
-                  width={480}
-                  height={480}
-                  className="h-64 w-64 object-contain sm:h-80 sm:w-80"
-                  sizes="(max-width: 640px) 256px, 320px"
+                  width={640}
+                  height={640}
+                  className="h-80 w-80 object-contain sm:h-[28rem] sm:w-[28rem]"
+                  sizes="(max-width: 640px) 320px, 448px"
                   priority
                 />
                 <p className="mt-5 text-center text-sm text-ink-dim">
