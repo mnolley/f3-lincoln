@@ -10,6 +10,7 @@ export const leaders: Leader[] = [
     f3Name: "Not Jake",
     role: "Nantan",
     description: roleDefinitions.Nantan,
+    photoUrl: "/leadership/not-jake.jpg",
   },
   {
     f3Name: "Gandalf",

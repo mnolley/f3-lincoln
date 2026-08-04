@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { PageShell } from "@/components/PageShell";
 import { leaders } from "@/content/leadership";
 import { roleDefinitions } from "@/lib/site";
@@ -39,13 +40,14 @@ export default function LeadershipPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {leaders.map((leader, index) => (
           <article key={`${leader.role}-${leader.f3Name}-${index}`} className="card-panel overflow-hidden">
-            <div className="flex h-36 items-center justify-center bg-gloom-panel">
+            <div className="relative flex h-48 items-center justify-center bg-gloom-panel sm:h-56">
               {leader.photoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={leader.photoUrl}
                   alt={leader.f3Name}
-                  className="h-full w-full object-cover"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               ) : (
                 <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-gloom-border bg-gloom font-display text-2xl font-bold text-ink-dim">
