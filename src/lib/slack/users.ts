@@ -61,8 +61,8 @@ export async function fetchSlackUserDirectory(
 
       const res = await fetch(url.toString(), {
         headers: { Authorization: `Bearer ${token}` },
-        // Directory changes slowly
-        next: { revalidate: 900 },
+        // Avoid caching failed missing_scope responses after scope upgrades
+        cache: "no-store",
       });
 
       if (!res.ok) {
