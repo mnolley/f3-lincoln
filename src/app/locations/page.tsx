@@ -18,7 +18,10 @@ export default function LocationsPage() {
       intro="F3 Lincoln posts at one AO: Sparta. Workouts are always outdoors. Schedule here is read-only — claim Q spots in Slack via Paxminer."
     >
       <div className="space-y-8">
-        <SlackCta />
+        <SlackCta
+          label="Claim a Q spot"
+          description="Q sign-ups and last-minute AO chatter live in Slack (Paxminer). Join the workspace, then grab your slot."
+        />
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-ink-muted">

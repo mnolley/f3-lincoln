@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageShell } from "@/components/PageShell";
+import { SlackCta } from "@/components/SlackCta";
 import { fiveCorePrinciples, site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -42,6 +43,13 @@ export default function NewHerePage() {
       title="New Here?"
       intro="Your buddy put the emotional headlock on you — or you found us online. Either way: you got this."
     >
+      <div className="mb-10">
+        <SlackCta
+          label="Plug into the PAX"
+          description="Join F3 Lincoln Slack for workout chatter, Pre-blasts, and community. FNGs are welcome — introduce yourself after your first post."
+        />
+      </div>
+
       <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-4">
           {expect.map((item) => (
@@ -124,8 +132,16 @@ export default function NewHerePage() {
             Reach the region
           </h2>
           <p className="mt-3 max-w-2xl text-sm text-ink-muted">
-            Prefer a human answer first? Send a note. For day-to-day chatter and Q sign-ups, Slack is
-            the home base once the invite is published.
+            Prefer a human answer first? Send a note. Day-to-day chatter and Q sign-ups live in{" "}
+            <a
+              href={site.slackUrl}
+              className="text-f3-red underline underline-offset-2"
+              target="_blank"
+              rel="noreferrer"
+            >
+              F3 Lincoln Slack
+            </a>
+            .
           </p>
 
           {site.email ? (
@@ -173,11 +189,19 @@ export default function NewHerePage() {
               </button>
             </form>
           ) : (
-            <div className="mt-6 rounded border border-dashed border-gloom-border bg-gloom-deep p-5 text-sm text-ink-muted">
-              FNG contact email is not set yet. Add{" "}
-              <code className="rounded bg-gloom px-1.5 py-0.5 text-xs text-ink">site.email</code> in{" "}
-              <code className="rounded bg-gloom px-1.5 py-0.5 text-xs text-ink">src/lib/site.ts</code>{" "}
-              to enable the intake form, or point FNGs to Slack when available.
+            <div className="mt-6 space-y-4">
+              <div className="rounded border border-dashed border-gloom-border bg-gloom-deep p-5 text-sm text-ink-muted">
+                No email form yet — the fastest way in is Slack. Jump into the workspace, then show
+                up at Sparta.
+              </div>
+              <a
+                href={site.slackUrl}
+                className="btn btn-primary w-full sm:w-auto"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {site.slackLabel}
+              </a>
             </div>
           )}
         </div>

@@ -7,7 +7,8 @@ export const site = {
     "To plant, grow, and serve small workout groups for men for the invigoration of male community leadership.",
   motto: "Leave no man behind, but leave no man where you find him.",
   // Update when region channels are ready
-  slackUrl: "",
+  slackUrl:
+    "https://join.slack.com/t/f3lincoln/shared_invite/zt-45t3jm46u-vjjeCItAh7YF3STHEYn8QA",
   slackLabel: "Join F3 Lincoln on Slack",
   mapUrl: "https://map.f3nation.com/?lat=40.8258&lon=-96.6852&zoom=11",
   nationUrl: "https://f3nation.com/",
