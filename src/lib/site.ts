@@ -56,26 +56,6 @@ export const paxMenu: PaxGroup[] = [
     title: "Lincoln",
     links: [
       {
-        label: "Sparta — Locations",
-        href: "/locations",
-        description: "Days, times, map, pre-run",
-      },
-      {
-        label: "Backblasts & Pre-blasts",
-        href: "/backblasts",
-        description: "Workout archive and announcements",
-      },
-      {
-        label: "Leadership",
-        href: "/leadership",
-        description: "Nantan, Weasel Shaker, Site Q",
-      },
-      {
-        label: "FNG / New Here",
-        href: "/new",
-        description: "What to expect on your first post",
-      },
-      {
         label: "Pax Resources",
         href: "/pax",
         description: "Full list of tools and links",
