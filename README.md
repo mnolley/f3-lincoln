@@ -2,11 +2,12 @@
 
 Public website for the **F3 Lincoln** men’s workout group (Fitness · Fellowship · Faith).
 
-## Local path
+## Locations
 
-```
-C:\Users\Mark\Projects\f3-lincoln
-```
+| | |
+|--|--|
+| **Local** | `C:\Users\Mark\Projects\f3-lincoln` |
+| **GitHub** | https://github.com/mnolley/f3-lincoln |
 
 ## Stack
 
