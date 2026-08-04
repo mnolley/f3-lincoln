@@ -25,8 +25,17 @@ export type AreaOfOperation = {
   mapUrl: string;
   days: DayOfWeek[];
   time: string;
+  /** Primary style label shown in the table badge */
   style: AoStyle;
+  /** Optional day-by-day style notes (e.g. Mon/Wed bootcamp, Fri Muscle Beach) */
+  styleByDay?: Partial<Record<DayOfWeek, string>>;
   description?: string;
+  /** Optional early option (e.g. pre-run) before the main beatdown */
+  preRun?: {
+    time: string;
+    days: DayOfWeek[];
+    notes?: string;
+  };
   siteQ?: string[];
 };
 

@@ -7,12 +7,12 @@ import { roleDefinitions } from "@/lib/site";
  */
 export const leaders: Leader[] = [
   {
-    f3Name: "TBD",
+    f3Name: "Not Jake",
     role: "Nantan",
     description: roleDefinitions.Nantan,
   },
   {
-    f3Name: "TBD",
+    f3Name: "Gandalf",
     role: "Weasel Shaker",
     description: roleDefinitions["Weasel Shaker"],
   },
@@ -20,7 +20,7 @@ export const leaders: Leader[] = [
     f3Name: "TBD",
     role: "Site Q",
     description: roleDefinitions["Site Q"],
-    ao: "Example AO — Bootcamp",
+    ao: "Sparta",
   },
   {
     f3Name: "TBD",
