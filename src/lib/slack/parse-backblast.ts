@@ -1,4 +1,5 @@
 import type { SlackBlock, SlackMessage } from "./types";
+import { resolveUserName, type UserDirectory } from "./users";
 
 export type ParsedBackblast = {
   id: string;
@@ -18,6 +19,22 @@ export type ParsedBackblast = {
   rawText: string;
   username?: string;
 };
+
+/** Thread-local directory used while parsing one fetch batch. */
+let activeDirectory: UserDirectory = new Map();
+
+export function withUserDirectory<T>(
+  directory: UserDirectory,
+  fn: () => T
+): T {
+  const prev = activeDirectory;
+  activeDirectory = directory;
+  try {
+    return fn();
+  } finally {
+    activeDirectory = prev;
+  }
+}
 
 /** True if this Slack message is a Paxminer / Slackblast-style backblast. */
 export function isPaxminerBackblast(message: SlackMessage): boolean {
@@ -145,8 +162,7 @@ function mrkdwnToPlain(text: string): string {
 }
 
 function formatUserMention(userId: string): string {
-  // No users:read scope — keep a short readable placeholder
-  return `@${userId.slice(-4)}`;
+  return resolveUserName(userId, activeDirectory);
 }
 
 function fieldValue(header: string, label: string): string {
@@ -282,14 +298,34 @@ export function parseBackblastMessage(message: SlackMessage): ParsedBackblast | 
 
   const sections = splitBodySections(body);
 
-  // QIC display: username from Paxminer ("Gandalf (via F3 Nation)") or mention stubs
-  let qic =
-    message.username?.replace(/\s*\(via F3 Nation\)\s*/i, "").trim() ||
-    qIds.map(formatUserMention).join(", ") ||
+  // QIC: prefer resolved F3 name, then Paxminer username, then Q mentions
+  const qicFromIds = qIds.map(formatUserMention).join(", ");
+  const qicFromUsername = message.username
+    ?.replace(/\s*\(via F3 Nation\)\s*/i, "")
+    .trim();
+  const qic =
+    (qIds[0] && activeDirectory.get(qIds[0])) ||
+    qicFromUsername ||
+    qicFromIds ||
     mrkdwnToPlain(qField) ||
     "Q";
 
   const id = message.ts.replace(".", "");
+
+  // Dedupe roster while preserving order
+  const seen = new Set<string>();
+  const paxRoster = paxIds
+    .map(formatUserMention)
+    .filter((name) => {
+      const key = name.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+  const fngsResolved = fngIds.length
+    ? fngIds.map(formatUserMention).join(", ")
+    : mrkdwnToPlain(fngField);
 
   return {
     id,
@@ -298,10 +334,10 @@ export function parseBackblastMessage(message: SlackMessage): ParsedBackblast | 
     date: dateIso,
     ao: mrkdwnToPlain(ao),
     qic,
-    paxRoster: paxIds.map(formatUserMention),
+    paxRoster,
     paxCount: Number.isFinite(paxCount) ? paxCount : 0,
     fngCount,
-    fngs: mrkdwnToPlain(fngField),
+    fngs: fngsResolved,
     warmARama: sections.warmARama,
     theThang: sections.theThang,
     cot: sections.cot,

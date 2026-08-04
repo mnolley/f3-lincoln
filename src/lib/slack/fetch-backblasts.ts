@@ -1,5 +1,14 @@
-import { parseBackblastMessage, type ParsedBackblast } from "./parse-backblast";
+import {
+  parseBackblastMessage,
+  withUserDirectory,
+  type ParsedBackblast,
+} from "./parse-backblast";
 import type { SlackHistoryResponse, SlackMessage } from "./types";
+import {
+  buildUserDirectory,
+  fetchSlackUserDirectory,
+  learnNamesFromBackblastMessages,
+} from "./users";
 
 const SLACK_API = "https://slack.com/api";
 
@@ -27,7 +36,6 @@ async function slackGet(
 
   const res = await fetch(url.toString(), {
     headers: { Authorization: `Bearer ${token}` },
-    // Cache on the server for a few minutes
     next: { revalidate: 300 },
   });
 
@@ -40,6 +48,7 @@ async function slackGet(
 
 /**
  * Fetch channel history and return only Paxminer-formatted backblasts.
+ * Resolves Slack user IDs → F3 names via users:read, Q-username learning, and overrides.
  */
 export async function fetchSlackBackblasts(options?: {
   limit?: number;
@@ -90,10 +99,17 @@ export async function fetchSlackBackblasts(options?: {
     };
   }
 
-  const posts = messages
-    .map(parseBackblastMessage)
-    .filter((p): p is ParsedBackblast => p !== null)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // Build F3 name directory: overrides + Slack users API + learned Q names
+  const { directory: fromApi } = await fetchSlackUserDirectory(config.token);
+  const learned = learnNamesFromBackblastMessages(messages);
+  const directory = buildUserDirectory(fromApi, learned);
+
+  const posts = withUserDirectory(directory, () =>
+    messages
+      .map(parseBackblastMessage)
+      .filter((p): p is ParsedBackblast => p !== null)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  );
 
   return { posts };
 }
@@ -101,7 +117,6 @@ export async function fetchSlackBackblasts(options?: {
 export async function fetchSlackBackblastById(
   id: string
 ): Promise<{ post?: ParsedBackblast; error?: string }> {
-  // ids are ts with the dot removed; recover possible ts forms
   const ts =
     id.includes(".")
       ? id
