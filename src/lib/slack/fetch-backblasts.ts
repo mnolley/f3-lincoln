@@ -102,6 +102,7 @@ export async function fetchSlackBackblasts(options?: {
   // Build F3 name directory: overrides + Slack users API + learned Q names
   const { directory: fromApi } = await fetchSlackUserDirectory(config.token);
   const learned = learnNamesFromBackblastMessages(messages);
+  // API display names should win over learned Q nicknames when available
   const directory = buildUserDirectory(fromApi, learned);
 
   const posts = withUserDirectory(directory, () =>

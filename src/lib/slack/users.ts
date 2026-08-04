@@ -26,6 +26,7 @@ type UsersListResponse = {
 };
 
 function pickF3Name(member: SlackMember): string | null {
+  // F3 nicknames almost always live in Slack "Display name"
   const display =
     member.profile?.display_name?.trim() ||
     member.profile?.display_name_normalized?.trim();
@@ -33,19 +34,21 @@ function pickF3Name(member: SlackMember): string | null {
     member.profile?.real_name?.trim() ||
     member.profile?.real_name_normalized?.trim() ||
     member.real_name?.trim();
-  // F3 nicknames are usually the Slack display name
   const name = display || real || member.name?.trim();
   if (!name || name === "slackbot") return null;
-  return name;
+  // Strip common Slack clutter
+  return name.replace(/\s*\(via F3 Nation\)\s*/i, "").trim();
 }
 
 /**
- * Load Slack workspace directory (requires users:read).
- * Returns empty map if scope is missing — callers should merge other sources.
+ * Load Slack workspace directory.
+ * Requires bot scopes: users:read (and optionally users.profile:read).
+ * After adding scopes in the Slack app, you must Reinstall to Workspace
+ * so the bot token is re-issued with those scopes.
  */
 export async function fetchSlackUserDirectory(
   token: string
-): Promise<{ directory: UserDirectory; error?: string }> {
+): Promise<{ directory: UserDirectory; error?: string; source?: string }> {
   const directory: UserDirectory = new Map();
   let cursor: string | undefined;
 
@@ -53,11 +56,13 @@ export async function fetchSlackUserDirectory(
     for (let page = 0; page < 20; page++) {
       const url = new URL(`${SLACK_API}/users.list`);
       url.searchParams.set("limit", "200");
+      // Include locale etc.; profile fields need users:read
       if (cursor) url.searchParams.set("cursor", cursor);
 
       const res = await fetch(url.toString(), {
         headers: { Authorization: `Bearer ${token}` },
-        next: { revalidate: 3600 },
+        // Directory changes slowly
+        next: { revalidate: 900 },
       });
 
       if (!res.ok) {
@@ -66,11 +71,15 @@ export async function fetchSlackUserDirectory(
 
       const data = (await res.json()) as UsersListResponse;
       if (!data.ok) {
-        // missing_scope is expected until the app is reinstalled with users:read
-        return {
-          directory,
-          error: data.error === "missing_scope" ? undefined : data.error,
-        };
+        if (data.error === "missing_scope") {
+          return {
+            directory,
+            error:
+              "missing_scope: bot token needs users:read. Reinstall the Slack app after adding scopes, then update SLACK_BOT_TOKEN.",
+            source: "none",
+          };
+        }
+        return { directory, error: data.error };
       }
 
       for (const member of data.members ?? []) {
@@ -89,7 +98,7 @@ export async function fetchSlackUserDirectory(
     };
   }
 
-  return { directory };
+  return { directory, source: "users.list" };
 }
 
 /**
