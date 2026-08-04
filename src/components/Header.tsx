@@ -15,9 +15,9 @@ export function Header() {
           <Image
             src="/brand/F3Lincoln_Logo.png"
             alt="F3 Lincoln"
-            width={40}
-            height={40}
-            className="h-10 w-10 object-contain"
+            width={56}
+            height={56}
+            className="h-12 w-12 object-contain sm:h-14 sm:w-14"
             priority
           />
           <div className="min-w-0">
