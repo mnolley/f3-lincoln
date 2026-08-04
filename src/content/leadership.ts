@@ -16,6 +16,7 @@ export const leaders: Leader[] = [
     f3Name: "Gandalf",
     role: "Weasel Shaker",
     description: roleDefinitions["Weasel Shaker"],
+    photoUrl: "/leadership/gandalf.jpg",
   },
   {
     f3Name: "TBD",
