@@ -53,16 +53,6 @@ export type PaxGroup = {
  */
 export const paxMenu: PaxGroup[] = [
   {
-    title: "Lincoln",
-    links: [
-      {
-        label: "Pax Resources",
-        href: "/pax",
-        description: "Full list of tools and links",
-      },
-    ],
-  },
-  {
     title: "Tools & Lingo",
     links: [
       {

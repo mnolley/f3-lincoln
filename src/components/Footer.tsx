@@ -31,11 +31,6 @@ export function Footer() {
           <div className="section-label">Pax</div>
           <ul className="mt-3 space-y-2 text-sm text-ink-muted">
             <li>
-              <Link href="/pax" className="hover:text-white">
-                Pax Resources
-              </Link>
-            </li>
-            <li>
               <a href={site.exiconUrl} className="hover:text-white" target="_blank" rel="noreferrer">
                 Exicon
               </a>
