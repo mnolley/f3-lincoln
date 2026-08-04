@@ -1,16 +1,81 @@
-import { site } from "@/lib/site";
+import Link from "next/link";
+import { nav, site } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-zinc-200 bg-zinc-50">
-      <div className="mx-auto max-w-5xl px-4 py-8 text-sm text-zinc-600">
-        <p className="font-medium text-zinc-900">{site.name}</p>
-        <p className="mt-1">{site.tagline}</p>
-        <p className="mt-1">{site.city}</p>
-        <p className="mt-4 text-xs text-zinc-500">
-          F3 is a national network of free, peer-led workouts for men. This site is for the{" "}
-          {site.region} region.
-        </p>
+    <footer className="mt-auto border-t border-gloom-border bg-gloom-panel safe-bottom">
+      <div className="mx-auto grid max-w-6xl gap-8 page-x py-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <div className="font-display text-lg font-bold uppercase tracking-wide text-white">
+            {site.name}
+          </div>
+          <p className="mt-2 text-sm text-ink-muted">{site.tagline}</p>
+          <p className="mt-1 text-sm text-ink-dim">{site.city}</p>
+          <p className="mt-4 text-sm italic text-ink-muted">&ldquo;{site.motto}&rdquo;</p>
+        </div>
+
+        <div>
+          <div className="section-label">Navigate</div>
+          <ul className="mt-3 space-y-2">
+            {nav.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className="text-sm text-ink-muted hover:text-white">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <div className="section-label">Nation</div>
+          <ul className="mt-3 space-y-2 text-sm text-ink-muted">
+            <li>
+              <a href={site.nationUrl} className="hover:text-white" target="_blank" rel="noreferrer">
+                F3 Nation
+              </a>
+            </li>
+            <li>
+              <a
+                href={site.nationStartUrl}
+                className="hover:text-white"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Start Here (Nation)
+              </a>
+            </li>
+            <li>
+              <a href={site.mapUrl} className="hover:text-white" target="_blank" rel="noreferrer">
+                F3 Nation Map
+              </a>
+            </li>
+            <li>
+              <a
+                href={site.disclaimerUrl}
+                className="hover:text-white"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Disclaimer &amp; Notice
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="border-t border-gloom-border">
+        <div className="mx-auto max-w-6xl page-x py-4 text-xs text-ink-dim">
+          © {new Date().getFullYear()} {site.name}. The circle F3 logo is used with the permission of{" "}
+          <a href={site.nationUrl} className="underline hover:text-white">
+            F3 Nation
+          </a>{" "}
+          and is a{" "}
+          <a href={site.trademarksUrl} className="underline hover:text-white">
+            registered trademark of F3 Nation, Inc
+          </a>
+          .
+        </div>
       </div>
     </footer>
   );

@@ -1,30 +1,81 @@
-import Link from "next/link";
-import { site } from "@/lib/site";
+"use client";
 
-const links = [
-  { href: "/about", label: "About" },
-  { href: "/workouts", label: "Workouts" },
-  { href: "/schedule", label: "Schedule" },
-  { href: "/join", label: "Join" },
-  { href: "/backblasts", label: "Backblasts" },
-  { href: "/contact", label: "Contact" },
-];
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { nav, site } from "@/lib/site";
 
 export function Header() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <header className="border-b border-zinc-200 bg-white">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
-        <Link href="/" className="font-semibold tracking-tight text-zinc-900">
-          {site.name}
+    <header className="sticky top-0 z-50 border-b border-gloom-border bg-gloom-deep/95 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 page-x py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
+          <Image
+            src="/brand/F3Lincoln_Logo.png"
+            alt="F3 Lincoln"
+            width={40}
+            height={40}
+            className="h-10 w-10 object-contain"
+            priority
+          />
+          <div className="min-w-0">
+            <div className="font-display text-sm font-bold uppercase tracking-[0.12em] text-white sm:text-base">
+              {site.name}
+            </div>
+            <div className="hidden text-xs text-ink-dim sm:block">{site.tagline}</div>
+          </div>
         </Link>
-        <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm text-zinc-700">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} className="hover:text-zinc-900">
-              {link.label}
+
+        <nav className="hidden items-center gap-1 lg:flex">
+          {nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded px-3 py-2 font-display text-xs font-bold uppercase tracking-[0.12em] text-ink-muted hover:bg-gloom hover:text-white"
+            >
+              {item.label}
             </Link>
           ))}
+          <Link href="/new" className="btn btn-primary ml-2">
+            Start Here
+          </Link>
         </nav>
+
+        <button
+          type="button"
+          className="btn btn-ghost min-h-11 px-3 lg:hidden"
+          aria-expanded={open}
+          aria-label="Toggle menu"
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? "Close" : "Menu"}
+        </button>
       </div>
+
+      {open ? (
+        <nav className="border-t border-gloom-border bg-gloom page-x py-3 lg:hidden safe-bottom">
+          <ul className="flex flex-col gap-1">
+            {nav.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="block rounded px-3 py-3 font-display text-sm font-bold uppercase tracking-[0.12em] text-ink hover:bg-gloom-deep"
+                  onClick={() => setOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+            <li className="pt-2">
+              <Link href="/new" className="btn btn-primary w-full" onClick={() => setOpen(false)}>
+                New to F3? Start Here
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      ) : null}
     </header>
   );
 }

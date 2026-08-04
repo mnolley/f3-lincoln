@@ -1,19 +1,16 @@
 # F3 Lincoln
 
-Public website for the **F3 Lincoln** men’s workout group (Fitness · Fellowship · Faith).
-
-## Locations
+Regional website for **F3 Lincoln** (Fitness · Fellowship · Faith) — built for [f3lincoln.com](https://f3lincoln.com).
 
 | | |
 |--|--|
 | **Local** | `C:\Users\Mark\Projects\f3-lincoln` |
 | **GitHub** | https://github.com/mnolley/f3-lincoln |
+| **PRD** | [docs/PRD.md](./docs/PRD.md) |
 
 ## Stack
 
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
+Next.js · TypeScript · Tailwind CSS · Vercel-ready
 
 ## Getting started
 
@@ -25,48 +22,35 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Project structure
+## Site map
 
-```
-f3-lincoln/
-├── public/
-│   ├── brand/          # Logos and F3 brand images
-│   └── images/         # General site images
-├── src/
-│   ├── app/            # Routes (pages)
-│   │   ├── page.tsx           # Home
-│   │   ├── about/
-│   │   ├── workouts/          # AO list
-│   │   ├── schedule/
-│   │   ├── join/
-│   │   ├── contact/
-│   │   └── backblasts/
-│   ├── components/     # Shared UI (Header, Footer, PageShell)
-│   ├── content/        # Static copy (principles, join steps)
-│   └── lib/            # Site config & AO data (site.ts)
-├── package.json
-└── README.md
-```
+| Path | Page |
+|------|------|
+| `/` | Home |
+| `/new` | New Here (FNG) |
+| `/locations` | Locations & schedule |
+| `/leadership` | Leadership directory |
+| `/backblasts` | Pre-blasts & backblasts |
+| `/backblasts/[id]` | Backblast detail |
 
 ## Edit content
 
-| What | Where |
-|------|--------|
-| Site name, mission, contact links | `src/lib/site.ts` |
-| Workout AOs / schedule data | `src/lib/site.ts` (`workouts` array) |
-| Principles & join steps | `src/content/copy.ts` |
-| Brand logos | `public/brand/` |
+| Content | File |
+|---------|------|
+| Site name, Slack, email, map | `src/lib/site.ts` |
+| AO schedule | `src/content/aos.ts` |
+| Leadership | `src/content/leadership.ts` |
+| Backblasts / pre-blasts | `src/content/backblasts.ts` |
+| Brand images | `public/brand/` |
 
-## Scripts
+## Design system (PRD)
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Local development server |
-| `npm run build` | Production build |
-| `npm run start` | Run production build |
-| `npm run lint` | ESLint |
+- **Background:** The Gloom — charcoal `#1F2937` / deep slate
+- **Accent:** F3 Red `#DC2626`
+- **Text:** Off-white body, white headers
+- **Fonts:** Montserrat (display), Inter (body)
+- **Mobile-first** large CTAs for 5 AM parking-lot use
 
-## Related
+## Deploy
 
-- Backblast app (existing): `C:\Users\Mark\Projects\Backblast`
-- Brand assets source: `C:\Users\Mark\Documents\F3 Web Content`
+Connect the GitHub repo to Vercel and set domain `f3lincoln.com`.

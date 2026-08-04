@@ -1,26 +1,144 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* The Gloom design system */
+  --color-gloom: #1f2937;
+  --color-gloom-deep: #111827;
+  --color-gloom-panel: #0b1220;
+  --color-gloom-border: #374151;
+  --color-f3-red: #dc2626;
+  --color-f3-red-hover: #b91c1c;
+  --color-ink: #f9fafb;
+  --color-ink-muted: #d1d5db;
+  --color-ink-dim: #9ca3af;
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-montserrat);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-gloom-deep);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+/* Touch-friendly targets for cold/sweaty hands */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary {
+  background-color: var(--color-f3-red);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-f3-red-hover);
+}
+
+.btn-outline {
+  border: 2px solid var(--color-ink);
+  color: var(--color-ink);
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background: var(--color-ink);
+  color: var(--color-gloom-deep);
+}
+
+.btn-ghost {
+  border: 2px solid var(--color-gloom-border);
+  color: var(--color-ink);
+  background: transparent;
+}
+
+.btn-ghost:hover {
+  border-color: var(--color-f3-red);
+  color: #fff;
+}
+
+.section-label {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-f3-red);
+}
+
+.card-panel {
+  background: var(--color-gloom);
+  border: 1px solid var(--color-gloom-border);
+  border-radius: 0.5rem;
+}
+
+.page-x {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+@media (min-width: 640px) {
+  .page-x {
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+}
+
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.prose-gloom p {
+  color: var(--color-ink-muted);
+  margin-bottom: 1rem;
+}
+
+.prose-gloom strong {
+  color: var(--color-ink);
+}
+
+.prose-gloom a {
+  color: #fca5a5;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose-gloom ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  color: var(--color-ink-muted);
+  margin-bottom: 1rem;
+}
+
+.prose-gloom li + li {
+  margin-top: 0.35rem;
 }
