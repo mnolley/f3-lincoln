@@ -4,7 +4,7 @@ import { nav, site } from "@/lib/site";
 export function Footer() {
   return (
     <footer className="mt-auto border-t border-gloom-border bg-gloom-panel safe-bottom">
-      <div className="mx-auto grid max-w-6xl gap-8 page-x py-10 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl gap-8 page-x py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="font-display text-lg font-bold uppercase tracking-wide text-white">
             {site.name}
@@ -24,6 +24,37 @@ export function Footer() {
                 </Link>
               </li>
             ))}
+          </ul>
+        </div>
+
+        <div>
+          <div className="section-label">Pax</div>
+          <ul className="mt-3 space-y-2 text-sm text-ink-muted">
+            <li>
+              <Link href="/pax" className="hover:text-white">
+                Pax Resources
+              </Link>
+            </li>
+            <li>
+              <a href={site.exiconUrl} className="hover:text-white" target="_blank" rel="noreferrer">
+                Exicon
+              </a>
+            </li>
+            <li>
+              <a href={site.lexiconUrl} className="hover:text-white" target="_blank" rel="noreferrer">
+                Lexicon
+              </a>
+            </li>
+            <li>
+              <a href={site.qSourceUrl} className="hover:text-white" target="_blank" rel="noreferrer">
+                Q Source
+              </a>
+            </li>
+            <li>
+              <a href={site.gearUrl} className="hover:text-white" target="_blank" rel="noreferrer">
+                F3 Gear
+              </a>
+            </li>
           </ul>
         </div>
 

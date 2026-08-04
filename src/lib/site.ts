@@ -12,6 +12,11 @@ export const site = {
   mapUrl: "https://map.f3nation.com/?lat=40.8258&lon=-96.6852&zoom=11",
   nationUrl: "https://f3nation.com/",
   nationStartUrl: "https://f3nation.com/start-here",
+  exiconUrl: "https://f3nation.com/exicon",
+  lexiconUrl: "https://f3nation.com/lexicon",
+  qSourceUrl: "https://f3nation.com/q-source",
+  gearUrl: "https://f3gear.com/",
+  nearMeUrl: "https://f3near.me/",
   disclaimerUrl: "https://f3nation.com/legal/disclaimer-and-notice/",
   trademarksUrl: "https://f3nation.com/use-of-f3-trademarks/",
   email: "",
@@ -20,6 +25,7 @@ export const site = {
   twitterUrl: "",
 } as const;
 
+/** Primary nav — always visible */
 export const nav = [
   { href: "/", label: "Home" },
   { href: "/new", label: "New Here" },
@@ -27,6 +33,113 @@ export const nav = [
   { href: "/leadership", label: "Leadership" },
   { href: "/backblasts", label: "Backblasts" },
 ] as const;
+
+export type PaxLink = {
+  label: string;
+  href: string;
+  description?: string;
+  external?: boolean;
+};
+
+export type PaxGroup = {
+  title: string;
+  links: PaxLink[];
+};
+
+/**
+ * Pax menu — inspired by F3 Omaha’s PAX dropdown (resources for active PAX / Qs).
+ * Internal Lincoln pages + F3 Nation tools.
+ */
+export const paxMenu: PaxGroup[] = [
+  {
+    title: "Lincoln",
+    links: [
+      {
+        label: "Sparta — Locations",
+        href: "/locations",
+        description: "Days, times, map, pre-run",
+      },
+      {
+        label: "Backblasts & Pre-blasts",
+        href: "/backblasts",
+        description: "Workout archive and announcements",
+      },
+      {
+        label: "Leadership",
+        href: "/leadership",
+        description: "Nantan, Weasel Shaker, Site Q",
+      },
+      {
+        label: "FNG / New Here",
+        href: "/new",
+        description: "What to expect on your first post",
+      },
+      {
+        label: "Pax Resources",
+        href: "/pax",
+        description: "Full list of tools and links",
+      },
+    ],
+  },
+  {
+    title: "Tools & Lingo",
+    links: [
+      {
+        label: "Exicon (Exercises)",
+        href: site.exiconUrl,
+        description: "Exercise encyclopedia",
+        external: true,
+      },
+      {
+        label: "Lexicon (Lingo)",
+        href: site.lexiconUrl,
+        description: "F3 terms — AO, QIC, COT, and more",
+        external: true,
+      },
+      {
+        label: "Q Source",
+        href: site.qSourceUrl,
+        description: "Leadership framework for HIMs",
+        external: true,
+      },
+      {
+        label: "F3 Nation Map",
+        href: site.mapUrl,
+        description: "Find AOs near you / Downrange",
+        external: true,
+      },
+      {
+        label: "F3Near.me",
+        href: site.nearMeUrl,
+        description: "Nearby workout finder",
+        external: true,
+      },
+    ],
+  },
+  {
+    title: "Nation & Gear",
+    links: [
+      {
+        label: "F3 Nation",
+        href: site.nationUrl,
+        description: "National home",
+        external: true,
+      },
+      {
+        label: "F3 Gear",
+        href: site.gearUrl,
+        description: "Shirts, flags, and merch",
+        external: true,
+      },
+      {
+        label: "Disclaimer & Notice",
+        href: site.disclaimerUrl,
+        description: "Official F3 Nation legal notice",
+        external: true,
+      },
+    ],
+  },
+];
 
 export const threeFs = [
   {
