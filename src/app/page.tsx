@@ -2,8 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { HeroMontage } from "@/components/HeroMontage";
-import { heroMontageImages } from "@/content/montage";
 import { fiveCorePrinciples, site, threeFs } from "@/lib/site";
 
 export default function HomePage() {
@@ -11,13 +9,7 @@ export default function HomePage() {
     <div className="flex min-h-full flex-col">
       <Header />
       <main className="flex-1">
-        {/* Media band — image montage now; set site.heroVideoUrl for video later */}
-        <HeroMontage
-          images={heroMontageImages}
-          videoUrl={site.heroVideoUrl || undefined}
-        />
-
-        {/* Hero copy */}
+        {/* Hero */}
         <section className="relative overflow-hidden border-b border-gloom-border bg-gloom-panel">
           <div
             className="pointer-events-none absolute inset-0 opacity-30"
