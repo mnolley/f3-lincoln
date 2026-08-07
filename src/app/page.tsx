@@ -70,7 +70,7 @@ export default function HomePage() {
                   sizes="(max-width: 768px) 100vw, 672px"
                   priority
                 />
-                <p className="px-4 py-4 text-center text-sm text-ink-dim sm:px-6">
+                <p className="px-4 py-4 text-center font-display text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted sm:px-6 sm:text-xs">
                   Free · Outdoor · Peer-led · Always ends with a COT
                 </p>
               </div>
