@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
 import { SlackCta } from "@/components/SlackCta";
+import { UpcomingBeatdowns } from "@/components/UpcomingBeatdowns";
 import { aos } from "@/content/aos";
 import { site } from "@/lib/site";
+import { fetchUpcomingBeatdowns } from "@/lib/slack/fetch-upcoming";
 
 export const metadata: Metadata = {
   title: "Locations & Schedule",
@@ -10,14 +12,21 @@ export const metadata: Metadata = {
     "F3 Lincoln AO Sparta — Mon/Wed/Fri 5:30–6:15 AM. Bootcamp midweek, Muscle Beach Fridays. Optional 5:00 AM pre-run.",
 };
 
-export default function LocationsPage() {
+// Refresh upcoming Q claims from Slack about every 5 minutes
+export const revalidate = 300;
+
+export default async function LocationsPage() {
+  const { slots, error } = await fetchUpcomingBeatdowns({ count: 3 });
+
   return (
     <PageShell
       eyebrow="Areas of Operation"
       title="Locations & Schedule"
       intro="F3 Lincoln posts at one AO: Sparta. Workouts are always outdoors. Schedule here is read-only — claim Q spots in Slack via Paxminer."
     >
-      <div className="space-y-8">
+      <div className="space-y-10">
+        <UpcomingBeatdowns slots={slots} error={error} />
+
         <SlackCta
           label="Claim a Q spot"
           description="Q sign-ups and last-minute AO chatter live in Slack (Paxminer). Join the workspace, then grab your slot."
@@ -56,10 +65,7 @@ export default function LocationsPage() {
             </div>
 
             <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-4">
-              <Fact
-                label="Days"
-                value={ao.days.join(" · ")}
-              />
+              <Fact label="Days" value={ao.days.join(" · ")} />
               <Fact label="Main beatdown" value={ao.time} />
               <Fact
                 label="Pre-run (optional)"
