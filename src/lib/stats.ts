@@ -14,25 +14,77 @@ export type StatsPost = {
   fngNames: string[];
 };
 
-/** Lightweight posts for the client stats UI (no full body text). */
-export function toStatsPosts(posts: ParsedBackblast[]): StatsPost[] {
-  return posts.map((p) => ({
-    id: p.id,
-    date: p.date,
-    ao: p.ao,
-    qic: p.qic,
-    title: p.title,
-    paxRoster: p.paxRoster,
-    fngNames: parseFngNames(p.fngs),
-  }));
+/**
+ * Strip roster junk so "1 @Prime", "@Prime", and "Prime" are the same HIM.
+ * Removes leading digits/list markers, @ signs, and non-letter noise.
+ */
+export function cleanPersonName(raw: string): string {
+  if (!raw) return "";
+  let s = raw.trim();
+
+  // Slack/markdown bold leftovers
+  s = s.replace(/^\*+|\*+$/g, "");
+
+  // Leading list / count-o-rama markers: "1 ", "1.", "1)", "#1", "(1)", "2 - "
+  s = s.replace(/^[#*\-•·▪]?\s*\(?\d+\)?[\s.)\-:＃]*/u, "");
+
+  // Leading @ mentions (possibly repeated)
+  s = s.replace(/^@+/, "");
+
+  // Any remaining leading non-letters (digits, punctuation, symbols)
+  s = s.replace(/^[^A-Za-z]+/, "");
+
+  // Trailing pure junk (not part of F3 names)
+  s = s.replace(/[#@*]+$/g, "");
+
+  return s.replace(/\s+/g, " ").trim();
 }
 
+/** Canonical key for matching (cleaned + lowercased). */
 export function normalizeName(name: string): string {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .replace(/^@/, "");
+  return cleanPersonName(name).toLowerCase().replace(/\s+/g, " ");
+}
+
+/** Prefer the cleaner display form when merging duplicates. */
+function preferDisplayName(a: string, b: string): string {
+  const score = (s: string) => {
+    let n = 0;
+    if (/^\d/.test(s)) n -= 3;
+    if (s.includes("@")) n -= 2;
+    if (/[^A-Za-z0-9\s'\-]/.test(s)) n -= 1;
+    n += Math.min(s.length, 40) * 0.01; // slight preference for fuller name
+    return n;
+  };
+  return score(b) > score(a) ? b : a;
+}
+
+function dedupeCleanNames(rawNames: string[]): string[] {
+  const byKey = new Map<string, string>();
+  for (const raw of rawNames) {
+    const display = cleanPersonName(raw);
+    if (!isUsableName(display)) continue;
+    const key = normalizeName(display);
+    if (!key) continue;
+    const existing = byKey.get(key);
+    byKey.set(key, existing ? preferDisplayName(existing, display) : display);
+  }
+  return [...byKey.values()];
+}
+
+/** Lightweight posts for the client stats UI (no full body text). */
+export function toStatsPosts(posts: ParsedBackblast[]): StatsPost[] {
+  return posts.map((p) => {
+    const qicParts = dedupeCleanNames(splitPeopleField(p.qic));
+    return {
+      id: p.id,
+      date: p.date,
+      ao: p.ao,
+      qic: qicParts.join(", ") || cleanPersonName(p.qic) || p.qic,
+      title: p.title,
+      paxRoster: dedupeCleanNames(p.paxRoster),
+      fngNames: dedupeCleanNames(parseFngNames(p.fngs)),
+    };
+  });
 }
 
 /** Split multi-person fields like "Not Jake, Gandalf" or "A & B". */
@@ -65,11 +117,13 @@ export function namesMatch(a: string, b: string): boolean {
 }
 
 export function isUsableName(raw: string): boolean {
-  const cleaned = raw.trim();
+  const cleaned = cleanPersonName(raw);
   if (!cleaned || /^tbd$/i.test(cleaned) || /^q$/i.test(cleaned)) return false;
   if (/^none$/i.test(cleaned) || /^n\/?a$/i.test(cleaned)) return false;
   // Skip unresolved Slack IDs like U01ABC...
   if (/^U[A-Z0-9]{6,}$/i.test(cleaned)) return false;
+  // Must still have a letter after cleaning
+  if (!/[A-Za-z]/.test(cleaned)) return false;
   return true;
 }
 
@@ -123,10 +177,11 @@ export function filterByDateRange(
 
 function addName(byKey: Map<string, string>, raw: string) {
   if (!isUsableName(raw)) return;
-  const cleaned = raw.trim();
-  const key = normalizeName(cleaned);
+  const display = cleanPersonName(raw);
+  const key = normalizeName(display);
   if (!key) return;
-  if (!byKey.has(key)) byKey.set(key, cleaned);
+  const existing = byKey.get(key);
+  byKey.set(key, existing ? preferDisplayName(existing, display) : display);
 }
 
 /** Unique PAX names from Qs + rosters + FNGs, sorted A–Z. */
@@ -200,11 +255,13 @@ function bump(
   raw: string
 ) {
   if (!isUsableName(raw)) return;
-  const name = raw.trim();
+  const name = cleanPersonName(raw);
   const key = normalizeName(name);
+  if (!key) return;
   const existing = map.get(key);
   if (existing) {
     existing.count += 1;
+    existing.name = preferDisplayName(existing.name, name);
   } else {
     map.set(key, { name, count: 1 });
   }
@@ -278,7 +335,9 @@ export function computeFirstJoins(posts: StatsPost[]): JoinRecord[] {
 
     for (const { raw, asFng } of candidates) {
       if (!isUsableName(raw)) continue;
-      const key = normalizeName(raw);
+      const display = cleanPersonName(raw);
+      const key = normalizeName(display);
+      if (!key) continue;
       if (first.has(key)) {
         // If we already saw them, still mark asFng if this same-day post lists FNG
         // (only update if same first date and was FNG)
@@ -286,10 +345,11 @@ export function computeFirstJoins(posts: StatsPost[]): JoinRecord[] {
         if (rec.firstYmd === postYmd(post.date) && asFng) {
           rec.asFng = true;
         }
+        rec.name = preferDisplayName(rec.name, display);
         continue;
       }
       first.set(key, {
-        name: raw.trim(),
+        name: display,
         firstDate: post.date,
         firstYmd: postYmd(post.date),
         firstAo: post.ao,
