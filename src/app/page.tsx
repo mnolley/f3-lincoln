@@ -60,17 +60,17 @@ export default function HomePage() {
               ) : null}
             </div>
             <div className="flex justify-center lg:justify-end">
-              <div className="card-panel flex w-full max-w-xl flex-col items-center p-4 sm:max-w-2xl sm:p-6">
+              <div className="card-panel w-full max-w-xl overflow-hidden sm:max-w-2xl">
                 <Image
-                  src="/brand/F3_new_logo.png"
-                  alt="F3 Lincoln logo"
-                  width={1200}
-                  height={1200}
-                  className="h-[22rem] w-[22rem] object-contain sm:h-[28rem] sm:w-[28rem] lg:h-[32rem] lg:w-[32rem]"
-                  sizes="(max-width: 640px) 352px, (max-width: 1024px) 448px, 512px"
+                  src="/brand/F3Lincoln_X_header.jpg"
+                  alt="F3 Lincoln — from @F3Lincoln on X"
+                  width={1500}
+                  height={500}
+                  className="h-auto w-full object-contain"
+                  sizes="(max-width: 768px) 100vw, 672px"
                   priority
                 />
-                <p className="mt-5 text-center text-sm text-ink-dim">
+                <p className="px-4 py-4 text-center text-sm text-ink-dim sm:px-6">
                   Free · Outdoor · Peer-led · Always ends with a COT
                 </p>
               </div>
