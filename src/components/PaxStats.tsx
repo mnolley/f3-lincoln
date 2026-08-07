@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { formatShortDate } from "@/lib/format";
 import {
   collectPaxNames,
+  computeMonthlyTotals,
   computeStat,
   defaultDateRange,
   filterByDateRange,
@@ -11,6 +12,7 @@ import {
   type StatKind,
   type StatsPost,
 } from "@/lib/stats";
+import { MonthlyLineChart } from "@/components/charts";
 
 type Props = {
   posts: StatsPost[];
@@ -35,6 +37,14 @@ export function StatsBody({ posts, error }: Props) {
   const result = useMemo(
     () => computeStat(filtered, person, kind),
     [filtered, person, kind]
+  );
+
+  const monthlyAttendance = useMemo(
+    () =>
+      kind === "attendance" && person
+        ? computeMonthlyTotals(result.matching)
+        : [],
+    [kind, person, result.matching]
   );
 
   return (
@@ -168,6 +178,21 @@ export function StatsBody({ posts, error }: Props) {
               </li>
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {kind === "attendance" && person && monthlyAttendance.length > 0 ? (
+        <div className="card-panel p-5 sm:p-6">
+          <p className="section-label">By month</p>
+          <p className="mt-1 text-xs text-ink-dim">
+            {person}&apos;s posts attended · {from || "…"} → {to || "…"}
+          </p>
+          <div className="mt-4">
+            <MonthlyLineChart
+              data={monthlyAttendance}
+              title={`${person} attendance by month`}
+            />
+          </div>
         </div>
       ) : null}
 

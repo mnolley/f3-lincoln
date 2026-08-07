@@ -14,6 +14,7 @@ import {
   type LeaderboardRow,
   type StatsPost,
 } from "@/lib/stats";
+import { LeaderboardBarChart } from "@/components/charts";
 
 const RECENT_JOINERS_LIMIT = 10;
 
@@ -217,6 +218,37 @@ export function LeaderboardBody({ posts, error }: Props) {
       </div>
 
       <JoinTable joins={recentJoiners} onExport={exportJoins} />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="card-panel p-5 sm:p-6">
+          <p className="section-label">Top Qs chart</p>
+          <p className="mt-1 text-xs text-ink-dim">
+            Beatdowns led in range · highest to lowest
+          </p>
+          <div className="mt-4">
+            <LeaderboardBarChart
+              rows={qBoard}
+              title="Top Qs bar chart"
+              valueLabel="Qs"
+              limit={15}
+            />
+          </div>
+        </div>
+        <div className="card-panel p-5 sm:p-6">
+          <p className="section-label">Most posts chart</p>
+          <p className="mt-1 text-xs text-ink-dim">
+            Beatdowns attended in range · highest to lowest
+          </p>
+          <div className="mt-4">
+            <LeaderboardBarChart
+              rows={attBoard}
+              title="Most posts bar chart"
+              valueLabel="Posts"
+              limit={15}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

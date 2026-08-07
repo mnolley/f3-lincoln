@@ -218,6 +218,36 @@ export function computeStat(
   return { count: matching.length, matching };
 }
 
+export type MonthBucket = {
+  /** YYYY-MM sort key */
+  key: string;
+  /** e.g. "Aug 2026" */
+  label: string;
+  count: number;
+};
+
+/** Attendance (or any post set) totals by calendar month in Central Time. */
+export function computeMonthlyTotals(posts: StatsPost[]): MonthBucket[] {
+  const map = new Map<string, number>();
+
+  for (const p of posts) {
+    const ymd = postYmd(p.date);
+    const key = ymd.slice(0, 7); // YYYY-MM
+    map.set(key, (map.get(key) ?? 0) + 1);
+  }
+
+  return [...map.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, count]) => {
+      const [ys, ms] = key.split("-");
+      const label = new Date(Date.UTC(Number(ys), Number(ms) - 1, 15)).toLocaleDateString(
+        "en-US",
+        { month: "short", year: "numeric", timeZone: "UTC" }
+      );
+      return { key, label, count };
+    });
+}
+
 export function defaultDateRange(posts: StatsPost[]): {
   from: string;
   to: string;

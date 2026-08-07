@@ -49,7 +49,7 @@ export function UpcomingBeatdowns({ slots, error, weatherByYmd }: Props) {
         </div>
       ) : (
         <ol className="grid gap-4 lg:grid-cols-3">
-          {slots.map((slot, i) => {
+          {slots.map((slot) => {
             const weather = weatherByYmd?.get(slot.ymd);
             return (
               <li
@@ -57,14 +57,9 @@ export function UpcomingBeatdowns({ slots, error, weatherByYmd }: Props) {
                 className="card-panel flex flex-col p-5 sm:p-6"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-display text-[10px] font-bold uppercase tracking-[0.16em] text-f3-red">
-                      #{i + 1}
-                    </span>
-                    <span className="rounded bg-gloom-deep px-2 py-1 font-display text-[10px] font-bold uppercase tracking-wide text-ink-dim">
-                      {slot.style}
-                    </span>
-                  </div>
+                  <span className="rounded bg-gloom-deep px-2 py-1 font-display text-[10px] font-bold uppercase tracking-wide text-ink-dim">
+                    {slot.style}
+                  </span>
                   <WeatherChip weather={weather} />
                 </div>
 
