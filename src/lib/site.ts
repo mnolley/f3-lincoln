@@ -63,14 +63,9 @@ export const paxMenu: PaxGroup[] = [
     title: "Lincoln",
     links: [
       {
-        label: "PAX Stats",
+        label: "PAX Stats & Leaderboard",
         href: "/stats",
-        description: "Q count & attendance — password protected",
-      },
-      {
-        label: "Leaderboard",
-        href: "/leaderboard",
-        description: "Top Qs, posts, recent joiners + CSV export",
+        description: "Individual stats, top Qs, joiners — password protected",
       },
     ],
   },

@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PageShell } from "@/components/PageShell";
-import { PaxStats } from "@/components/PaxStats";
+import { PaxHub } from "@/components/PaxHub";
 import { getBackblasts } from "@/lib/backblasts";
 import { toStatsPosts } from "@/lib/stats";
 
 export const metadata: Metadata = {
-  title: "PAX Stats",
-  description: "Password-protected summary stats from F3 Lincoln backblasts.",
+  title: "PAX Stats & Leaderboard",
+  description:
+    "Password-protected F3 Lincoln stats and leaderboards from the backblast archive.",
   robots: { index: false, follow: false },
 };
 
-// Revalidate Slack + archive every 5 minutes
 export const revalidate = 300;
 
 export default async function StatsPage() {
-  // Full archive + live Slack so date-range stats keep growing over time
   const { posts, error } = await getBackblasts({
     limit: 200,
     maxPages: 8,
@@ -24,9 +24,17 @@ export default async function StatsPage() {
     <PageShell
       eyebrow="For the pack"
       title="PAX Stats"
-      intro="How many times you've Q'd or posted — filtered by date range and HIM. Password required. Uses the durable backblast archive."
+      intro="Individual stats and region leaderboards. Password required — unlock once, then switch tabs."
     >
-      <PaxStats posts={toStatsPosts(posts)} error={error} />
+      <Suspense
+        fallback={
+          <div className="card-panel p-8 text-center text-sm text-ink-dim">
+            Loading…
+          </div>
+        }
+      >
+        <PaxHub posts={toStatsPosts(posts)} error={error} />
+      </Suspense>
     </PageShell>
   );
 }

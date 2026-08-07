@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { formatShortDate } from "@/lib/format";
 import {
   computeAttendanceLeaderboard,
@@ -15,22 +14,16 @@ import {
   type LeaderboardRow,
   type StatsPost,
 } from "@/lib/stats";
-import { PaxAuthGate } from "./PaxAuthGate";
+
+const RECENT_JOINERS_LIMIT = 10;
 
 type Props = {
   posts: StatsPost[];
   error?: string;
 };
 
-export function PaxLeaderboard({ posts, error }: Props) {
-  return (
-    <PaxAuthGate blurb="Leaderboards are for the pack. Enter the password to continue.">
-      <LeaderboardBody posts={posts} error={error} />
-    </PaxAuthGate>
-  );
-}
-
-function LeaderboardBody({ posts, error }: Props) {
+/** Leaderboard boards — rendered inside PaxHub (password gated). */
+export function LeaderboardBody({ posts, error }: Props) {
   const defaults = useMemo(() => defaultDateRange(posts), [posts]);
   const [from, setFrom] = useState(defaults.from);
   const [to, setTo] = useState(defaults.to);
@@ -40,19 +33,14 @@ function LeaderboardBody({ posts, error }: Props) {
     [posts, from, to]
   );
 
-  // First-join uses full history so “joined date” is true first appearance
+  // First-join uses full archive history so “joined date” is true first appearance
   const joins = useMemo(() => computeFirstJoins(posts), [posts]);
 
-  // Optionally highlight who first appeared within the selected range
-  const joinsInRange = useMemo(() => {
-    const fromY = from.trim();
-    const toY = to.trim();
-    return joins.filter((j) => {
-      if (fromY && j.firstYmd < fromY) return false;
-      if (toY && j.firstYmd > toY) return false;
-      return true;
-    });
-  }, [joins, from, to]);
+  /** Newest 10 HIMs by first appearance (FNG or first roster/Q listing). */
+  const recentJoiners = useMemo(
+    () => joins.slice(0, RECENT_JOINERS_LIMIT),
+    [joins]
+  );
 
   const qBoard = useMemo(() => computeQLeaderboard(filtered), [filtered]);
   const attBoard = useMemo(
@@ -82,10 +70,10 @@ function LeaderboardBody({ posts, error }: Props) {
 
   function exportJoins() {
     downloadCsv(
-      `f3-lincoln-recent-joiners.csv`,
+      `f3-lincoln-recent-joiners-top10.csv`,
       rowsToCsv(
         ["Name", "Joined (date)", "AO", "Listed as FNG", "First backblast"],
-        joins.map((j) => [
+        recentJoiners.map((j) => [
           j.name,
           j.firstYmd,
           j.firstAo,
@@ -115,7 +103,7 @@ function LeaderboardBody({ posts, error }: Props) {
       "",
       "",
     ]);
-    const jRows = joins.map((j, i) => [
+    const jRows = recentJoiners.map((j, i) => [
       "First join",
       i + 1,
       j.name,
@@ -149,12 +137,12 @@ function LeaderboardBody({ posts, error }: Props) {
           {filtered.length !== posts.length
             ? ` · ${filtered.length} in range for Q / attendance`
             : null}
-          {" · "}
-          <Link href="/stats" className="text-f3-red hover:underline">
-            Individual stats →
-          </Link>
         </p>
-        <button type="button" className="btn btn-outline min-h-10 px-3 text-xs" onClick={exportAll}>
+        <button
+          type="button"
+          className="btn btn-outline min-h-10 px-3 text-xs"
+          onClick={exportAll}
+        >
           Export all CSV
         </button>
       </div>
@@ -162,7 +150,7 @@ function LeaderboardBody({ posts, error }: Props) {
       {error ? (
         <div className="card-panel border-f3-red/40 p-5 text-sm text-ink-muted">
           <p className="font-display text-xs font-bold uppercase tracking-wide text-f3-red">
-            Slack connection
+            Data source
           </p>
           <p className="mt-2">{error}</p>
         </div>
@@ -202,9 +190,10 @@ function LeaderboardBody({ posts, error }: Props) {
           />
         </label>
         <p className="text-xs text-ink-dim sm:col-span-2">
-          Range limited to available backblasts ({defaults.from} → {defaults.to}).
-          Filters Q and attendance boards. “Most recent joiners” uses first
-          appearance across the full archive (including FNG field).
+          Range limited to available backblasts ({defaults.from} → {defaults.to}
+          ). Filters Q and attendance boards. Recent joiners always use first
+          appearance across the full archive (FNG or first post as PAX/Q) — top{" "}
+          {RECENT_JOINERS_LIMIT} newest only.
         </p>
       </div>
 
@@ -227,12 +216,7 @@ function LeaderboardBody({ posts, error }: Props) {
         />
       </div>
 
-      <JoinTable
-        joins={joins}
-        joinsInRange={joinsInRange}
-        rangeActive={Boolean(from || to)}
-        onExport={exportJoins}
-      />
+      <JoinTable joins={recentJoiners} onExport={exportJoins} />
     </div>
   );
 }
@@ -308,30 +292,19 @@ function LeaderTable({
 
 function JoinTable({
   joins,
-  joinsInRange,
-  rangeActive,
   onExport,
 }: {
   joins: JoinRecord[];
-  joinsInRange: JoinRecord[];
-  rangeActive: boolean;
   onExport: () => void;
 }) {
-  const [showAll, setShowAll] = useState(false);
-  // Default view: most recent 25; toggle for full list
-  const source = rangeActive ? joinsInRange : joins;
-  const visible = showAll ? source : source.slice(0, 25);
-
   return (
     <div className="card-panel overflow-hidden">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-gloom-border px-5 py-4">
         <div>
           <p className="section-label">Most recent joiners</p>
           <p className="mt-1 text-xs text-ink-dim">
-            First date listed as Q, PAX, or FNG
-            {rangeActive
-              ? ` · ${joinsInRange.length} first appeared in selected range`
-              : ` · ${joins.length} unique HIMs in loaded history`}
+            Newest {RECENT_JOINERS_LIMIT} first appearances (FNG or first time as
+            PAX/Q in the archive)
           </p>
         </div>
         <button
@@ -343,72 +316,61 @@ function JoinTable({
           CSV
         </button>
       </div>
-      {source.length === 0 ? (
+      {joins.length === 0 ? (
         <p className="px-5 py-8 text-center text-sm text-ink-dim">
-          {rangeActive
-            ? "No first appearances in this date range."
-            : "No PAX names found yet."}
+          No PAX names found yet.
         </p>
       ) : (
-        <>
-          <div className="max-h-[28rem] overflow-y-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="sticky top-0 bg-gloom-panel text-ink-dim">
-                <tr>
-                  <th className="px-4 py-2 font-display text-[10px] font-bold uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-4 py-2 font-display text-[10px] font-bold uppercase tracking-wider">
-                    Joined
-                  </th>
-                  <th className="hidden px-4 py-2 font-display text-[10px] font-bold uppercase tracking-wider sm:table-cell">
-                    First AO
-                  </th>
-                  <th className="px-4 py-2 font-display text-[10px] font-bold uppercase tracking-wider">
-                    FNG?
-                  </th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-gloom-panel text-ink-dim">
+              <tr>
+                <th className="px-4 py-2 font-display text-[10px] font-bold uppercase tracking-wider">
+                  #
+                </th>
+                <th className="px-4 py-2 font-display text-[10px] font-bold uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-4 py-2 font-display text-[10px] font-bold uppercase tracking-wider">
+                  Joined
+                </th>
+                <th className="hidden px-4 py-2 font-display text-[10px] font-bold uppercase tracking-wider sm:table-cell">
+                  First AO
+                </th>
+                <th className="px-4 py-2 font-display text-[10px] font-bold uppercase tracking-wider">
+                  FNG?
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gloom-border">
+              {joins.map((j, i) => (
+                <tr key={j.name} className="hover:bg-gloom-deep/60">
+                  <td className="px-4 py-2.5 tabular-nums text-ink-dim">
+                    {i + 1}
+                  </td>
+                  <td className="px-4 py-2.5 font-medium text-ink">{j.name}</td>
+                  <td className="px-4 py-2.5 tabular-nums text-ink-muted">
+                    <time dateTime={j.firstDate}>
+                      {formatShortDate(j.firstDate)}
+                    </time>
+                  </td>
+                  <td className="hidden px-4 py-2.5 text-ink-dim sm:table-cell">
+                    {j.firstAo}
+                  </td>
+                  <td className="px-4 py-2.5">
+                    {j.asFng ? (
+                      <span className="rounded bg-f3-red/20 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-wide text-f3-red">
+                        FNG
+                      </span>
+                    ) : (
+                      <span className="text-ink-dim">—</span>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gloom-border">
-                {visible.map((j) => (
-                  <tr key={j.name} className="hover:bg-gloom-deep/60">
-                    <td className="px-4 py-2.5 font-medium text-ink">{j.name}</td>
-                    <td className="px-4 py-2.5 tabular-nums text-ink-muted">
-                      <time dateTime={j.firstDate}>
-                        {formatShortDate(j.firstDate)}
-                      </time>
-                    </td>
-                    <td className="hidden px-4 py-2.5 text-ink-dim sm:table-cell">
-                      {j.firstAo}
-                    </td>
-                    <td className="px-4 py-2.5">
-                      {j.asFng ? (
-                        <span className="rounded bg-f3-red/20 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-wide text-f3-red">
-                          FNG
-                        </span>
-                      ) : (
-                        <span className="text-ink-dim">—</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {source.length > 25 ? (
-            <div className="border-t border-gloom-border px-5 py-3 text-center">
-              <button
-                type="button"
-                className="font-display text-xs font-bold uppercase tracking-wide text-f3-red hover:underline"
-                onClick={() => setShowAll((v) => !v)}
-              >
-                {showAll
-                  ? "Show top 25"
-                  : `Show all ${source.length} joiners`}
-              </button>
-            </div>
-          ) : null}
-        </>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { formatShortDate } from "@/lib/format";
 import {
   collectPaxNames,
@@ -12,22 +11,14 @@ import {
   type StatKind,
   type StatsPost,
 } from "@/lib/stats";
-import { PaxAuthGate } from "./PaxAuthGate";
 
 type Props = {
   posts: StatsPost[];
   error?: string;
 };
 
-export function PaxStats({ posts, error }: Props) {
-  return (
-    <PaxAuthGate blurb="PAX stats are for the pack. Enter the password to continue.">
-      <StatsBody posts={posts} error={error} />
-    </PaxAuthGate>
-  );
-}
-
-function StatsBody({ posts, error }: Props) {
+/** Individual Q / attendance stats — rendered inside PaxHub (password gated). */
+export function StatsBody({ posts, error }: Props) {
   const defaults = useMemo(() => defaultDateRange(posts), [posts]);
   const [from, setFrom] = useState(defaults.from);
   const [to, setTo] = useState(defaults.to);
@@ -48,23 +39,17 @@ function StatsBody({ posts, error }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-ink-dim">
-          {posts.length} backblast{posts.length === 1 ? "" : "s"} loaded
-          {filtered.length !== posts.length
-            ? ` · ${filtered.length} in range`
-            : null}
-          {" · "}
-          <Link href="/leaderboard" className="text-f3-red hover:underline">
-            Leaderboard →
-          </Link>
-        </p>
-      </div>
+      <p className="text-sm text-ink-dim">
+        {posts.length} backblast{posts.length === 1 ? "" : "s"} loaded
+        {filtered.length !== posts.length
+          ? ` · ${filtered.length} in range`
+          : null}
+      </p>
 
       {error ? (
         <div className="card-panel border-f3-red/40 p-5 text-sm text-ink-muted">
           <p className="font-display text-xs font-bold uppercase tracking-wide text-f3-red">
-            Slack connection
+            Data source
           </p>
           <p className="mt-2">{error}</p>
         </div>
