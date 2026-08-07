@@ -26,8 +26,8 @@ export default function HomePage() {
                 "radial-gradient(ellipse at top, rgba(220,38,38,0.25), transparent 55%), linear-gradient(180deg, #111827 0%, #0b1220 100%)",
             }}
           />
-          <div className="relative mx-auto grid max-w-6xl gap-10 page-x py-14 sm:py-20 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-            <div>
+          <div className="relative mx-auto grid max-w-6xl gap-10 page-x py-14 sm:py-16 lg:grid-cols-[1fr_1.25fr] lg:items-stretch lg:gap-8 lg:py-16">
+            <div className="flex flex-col justify-center">
               <p className="section-label">{site.city}</p>
               <h1 className="mt-3 font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-wide text-white sm:text-6xl">
                 {site.name}
@@ -59,18 +59,19 @@ export default function HomePage() {
                 </p>
               ) : null}
             </div>
-            <div className="flex justify-center lg:justify-end">
-              <div className="card-panel w-full max-w-xl overflow-hidden sm:max-w-2xl">
-                <Image
-                  src="/brand/F3Lincoln_X_header.jpg"
-                  alt="F3 Lincoln — from @F3Lincoln on X"
-                  width={1500}
-                  height={500}
-                  className="h-auto w-full object-contain"
-                  sizes="(max-width: 768px) 100vw, 672px"
-                  priority
-                />
-                <p className="px-4 py-4 text-center font-display text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted sm:px-6 sm:text-xs">
+            <div className="flex min-h-0 w-full min-w-0">
+              <div className="card-panel flex w-full flex-col overflow-hidden">
+                <div className="relative min-h-[18rem] w-full flex-1 bg-black sm:min-h-[22rem] lg:min-h-[26rem]">
+                  <Image
+                    src="/brand/F3Lincoln_X_header.jpg"
+                    alt="F3 Lincoln — from @F3Lincoln on X"
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 1024px) 100vw, 55vw"
+                    priority
+                  />
+                </div>
+                <p className="shrink-0 px-4 py-3 text-center font-display text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted sm:px-6 sm:py-4 sm:text-xs">
                   Free · Outdoor · Peer-led · Always ends with a COT
                 </p>
               </div>
