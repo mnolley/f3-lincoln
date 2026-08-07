@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageShell } from "@/components/PageShell";
 import { formatShortDate, formatWorkoutWhen } from "@/lib/format";
-import { fetchSlackBackblasts } from "@/lib/slack/fetch-backblasts";
+import { getBackblasts } from "@/lib/backblasts";
 
 export const metadata: Metadata = {
   title: "Backblasts",
@@ -10,17 +10,20 @@ export const metadata: Metadata = {
     "F3 Lincoln backblasts from Slack — workout summaries posted via Paxminer.",
 };
 
-// Revalidate Slack data every 5 minutes
+// Revalidate Slack + archive every 5 minutes
 export const revalidate = 300;
 
 export default async function BackblastsPage() {
-  const { posts, error } = await fetchSlackBackblasts({ limit: 50, maxPages: 3 });
+  const { posts, error, fromArchive } = await getBackblasts({
+    limit: 100,
+    maxPages: 5,
+  });
 
   return (
     <PageShell
       eyebrow="The archive"
       title="Backblasts"
-      intro="Live from the #backblast Slack channel — Paxminer posts only. Normal chat is filtered out."
+      intro="From the #backblast Slack channel (Paxminer posts) plus a durable archive so old beatdowns stay available after Slack history rolls off."
     >
       {error ? (
         <div className="card-panel border-f3-red/40 p-5 text-sm text-ink-muted">
@@ -90,8 +93,9 @@ export default async function BackblastsPage() {
       </div>
 
       <p className="mt-8 text-xs text-ink-dim">
-        Sourced from Slack via <code className="text-ink-muted">conversations.history</code>.
-        Refreshes about every 5 minutes.
+        Sourced from Slack via <code className="text-ink-muted">conversations.history</code>
+        {fromArchive ? " and the durable archive" : ""}. Refreshes about every 5 minutes.
+        New posts are saved automatically so they remain after Slack drops them.
       </p>
     </PageShell>
   );

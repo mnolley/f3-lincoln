@@ -176,7 +176,12 @@ function LeaderboardBody({ posts, error }: Props) {
           <input
             type="date"
             value={from}
-            onChange={(e) => setFrom(e.target.value)}
+            min={defaults.from}
+            max={defaults.to}
+            onChange={(e) => {
+              const v = e.target.value;
+              setFrom(v < defaults.from ? defaults.from : v > to ? to : v);
+            }}
             className="field-input"
           />
         </label>
@@ -187,13 +192,19 @@ function LeaderboardBody({ posts, error }: Props) {
           <input
             type="date"
             value={to}
-            onChange={(e) => setTo(e.target.value)}
+            min={defaults.from}
+            max={defaults.to}
+            onChange={(e) => {
+              const v = e.target.value;
+              setTo(v > defaults.to ? defaults.to : v < from ? from : v);
+            }}
             className="field-input"
           />
         </label>
         <p className="text-xs text-ink-dim sm:col-span-2">
-          Date range filters Q and attendance boards. “Most recent joiners” always
-          uses first appearance across all loaded backblasts (including FNG field).
+          Range limited to available backblasts ({defaults.from} → {defaults.to}).
+          Filters Q and attendance boards. “Most recent joiners” uses first
+          appearance across the full archive (including FNG field).
         </p>
       </div>
 

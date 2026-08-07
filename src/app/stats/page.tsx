@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
 import { PaxStats } from "@/components/PaxStats";
-import { fetchSlackBackblasts } from "@/lib/slack/fetch-backblasts";
+import { getBackblasts } from "@/lib/backblasts";
 import { toStatsPosts } from "@/lib/stats";
 
 export const metadata: Metadata = {
@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Revalidate Slack data every 5 minutes
+// Revalidate Slack + archive every 5 minutes
 export const revalidate = 300;
 
 export default async function StatsPage() {
-  // Pull more history than the public list so date-range stats are useful
-  const { posts, error } = await fetchSlackBackblasts({
+  // Full archive + live Slack so date-range stats keep growing over time
+  const { posts, error } = await getBackblasts({
     limit: 200,
     maxPages: 8,
   });
@@ -24,7 +24,7 @@ export default async function StatsPage() {
     <PageShell
       eyebrow="For the pack"
       title="PAX Stats"
-      intro="How many times you've Q'd or posted — filtered by date range and HIM. Password required."
+      intro="How many times you've Q'd or posted — filtered by date range and HIM. Password required. Uses the durable backblast archive."
     >
       <PaxStats posts={toStatsPosts(posts)} error={error} />
     </PageShell>

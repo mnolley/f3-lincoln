@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
 import { PaxLeaderboard } from "@/components/PaxLeaderboard";
-import { fetchSlackBackblasts } from "@/lib/slack/fetch-backblasts";
+import { getBackblasts } from "@/lib/backblasts";
 import { toStatsPosts } from "@/lib/stats";
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function LeaderboardPage() {
-  const { posts, error } = await fetchSlackBackblasts({
+  const { posts, error } = await getBackblasts({
     limit: 200,
     maxPages: 8,
   });
@@ -23,7 +23,7 @@ export default async function LeaderboardPage() {
     <PageShell
       eyebrow="For the pack"
       title="Leaderboard"
-      intro="Top Qs, most posts, and who joined most recently — from Slack backblasts. Password required. Export any board to CSV."
+      intro="Top Qs, most posts, and who joined most recently — from the durable backblast archive (Slack + saved history). Password required. Export any board to CSV."
     >
       <PaxLeaderboard posts={toStatsPosts(posts)} error={error} />
     </PageShell>

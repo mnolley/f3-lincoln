@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
 import { formatWorkoutWhen } from "@/lib/format";
-import { fetchSlackBackblastById } from "@/lib/slack/fetch-backblasts";
+import { getBackblastById } from "@/lib/backblasts";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -11,14 +11,14 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const { post } = await fetchSlackBackblastById(id);
+  const { post } = await getBackblastById(id);
   if (!post) return { title: "Backblast" };
   return { title: post.title, description: `${post.ao} · QIC ${post.qic}` };
 }
 
 export default async function BackblastDetailPage({ params }: Props) {
   const { id } = await params;
-  const { post, error } = await fetchSlackBackblastById(id);
+  const { post, error } = await getBackblastById(id);
 
   if (error === "Backblast not found" || !post) {
     notFound();

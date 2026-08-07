@@ -75,7 +75,12 @@ function StatsBody({ posts, error }: Props) {
           <input
             type="date"
             value={from}
-            onChange={(e) => setFrom(e.target.value)}
+            min={defaults.from}
+            max={defaults.to}
+            onChange={(e) => {
+              const v = e.target.value;
+              setFrom(v < defaults.from ? defaults.from : v > to ? to : v);
+            }}
             className="field-input"
           />
         </Field>
@@ -83,7 +88,12 @@ function StatsBody({ posts, error }: Props) {
           <input
             type="date"
             value={to}
-            onChange={(e) => setTo(e.target.value)}
+            min={defaults.from}
+            max={defaults.to}
+            onChange={(e) => {
+              const v = e.target.value;
+              setTo(v > defaults.to ? defaults.to : v < from ? from : v);
+            }}
             className="field-input"
           />
         </Field>
