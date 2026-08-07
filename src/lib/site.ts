@@ -60,6 +60,11 @@ export const paxMenu: PaxGroup[] = [
         href: "/stats",
         description: "Q count & attendance — password protected",
       },
+      {
+        label: "Leaderboard",
+        href: "/leaderboard",
+        description: "Top Qs, posts, recent joiners + CSV export",
+      },
     ],
   },
   {

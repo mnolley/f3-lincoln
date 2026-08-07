@@ -1,18 +1,18 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
+import Link from "next/link";
 import { formatShortDate } from "@/lib/format";
 import {
   collectPaxNames,
   computeStat,
   defaultDateRange,
   filterByDateRange,
+  personIsQ,
   type StatKind,
   type StatsPost,
 } from "@/lib/stats";
-
-const AUTH_KEY = "f3lincoln-pax-stats";
-const PASSWORD = "gloom";
+import { PaxAuthGate } from "./PaxAuthGate";
 
 type Props = {
   posts: StatsPost[];
@@ -20,25 +20,19 @@ type Props = {
 };
 
 export function PaxStats({ posts, error }: Props) {
-  const [unlocked, setUnlocked] = useState(false);
-  const [password, setPassword] = useState("");
-  const [authError, setAuthError] = useState("");
+  return (
+    <PaxAuthGate blurb="PAX stats are for the pack. Enter the password to continue.">
+      <StatsBody posts={posts} error={error} />
+    </PaxAuthGate>
+  );
+}
 
+function StatsBody({ posts, error }: Props) {
   const defaults = useMemo(() => defaultDateRange(posts), [posts]);
   const [from, setFrom] = useState(defaults.from);
   const [to, setTo] = useState(defaults.to);
   const [person, setPerson] = useState("");
   const [kind, setKind] = useState<StatKind>("q");
-
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem(AUTH_KEY) === "1") {
-        setUnlocked(true);
-      }
-    } catch {
-      // ignore private mode
-    }
-  }, []);
 
   const people = useMemo(() => collectPaxNames(posts), [posts]);
 
@@ -52,74 +46,6 @@ export function PaxStats({ posts, error }: Props) {
     [filtered, person, kind]
   );
 
-  function handleUnlock(e: React.FormEvent) {
-    e.preventDefault();
-    if (password.trim().toLowerCase() === PASSWORD) {
-      try {
-        sessionStorage.setItem(AUTH_KEY, "1");
-      } catch {
-        // ignore
-      }
-      setUnlocked(true);
-      setAuthError("");
-      setPassword("");
-    } else {
-      setAuthError("Wrong password. Try again, HIM.");
-    }
-  }
-
-  function handleLock() {
-    try {
-      sessionStorage.removeItem(AUTH_KEY);
-    } catch {
-      // ignore
-    }
-    setUnlocked(false);
-  }
-
-  if (!unlocked) {
-    return (
-      <div className="mx-auto max-w-md">
-        <div className="card-panel p-6 sm:p-8">
-          <p className="section-label">Restricted</p>
-          <h2 className="mt-2 font-display text-xl font-bold uppercase text-white">
-            Enter the Gloom
-          </h2>
-          <p className="mt-2 text-sm text-ink-muted">
-            PAX stats are for the pack. Enter the password to continue.
-          </p>
-          <form onSubmit={handleUnlock} className="mt-6 space-y-4">
-            <div>
-              <label
-                htmlFor="pax-stats-password"
-                className="mb-1.5 block font-display text-xs font-bold uppercase tracking-wide text-ink-dim"
-              >
-                Password
-              </label>
-              <input
-                id="pax-stats-password"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded border border-gloom-border bg-gloom-deep px-3 py-3 text-ink outline-none focus:border-f3-red"
-                placeholder="•••••"
-              />
-            </div>
-            {authError ? (
-              <p className="text-sm text-f3-red" role="alert">
-                {authError}
-              </p>
-            ) : null}
-            <button type="submit" className="btn btn-primary w-full">
-              Unlock stats
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -128,10 +54,11 @@ export function PaxStats({ posts, error }: Props) {
           {filtered.length !== posts.length
             ? ` · ${filtered.length} in range`
             : null}
+          {" · "}
+          <Link href="/leaderboard" className="text-f3-red hover:underline">
+            Leaderboard →
+          </Link>
         </p>
-        <button type="button" className="btn btn-ghost min-h-10 px-3 text-xs" onClick={handleLock}>
-          Lock
-        </button>
       </div>
 
       {error ? (
@@ -228,7 +155,10 @@ export function PaxStats({ posts, error }: Props) {
           </div>
           <ul className="divide-y divide-gloom-border">
             {result.matching.map((post) => (
-              <li key={post.id} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-5 py-3 text-sm">
+              <li
+                key={post.id}
+                className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-5 py-3 text-sm"
+              >
                 <time className="shrink-0 text-ink-dim" dateTime={post.date}>
                   {formatShortDate(post.date)}
                 </time>
@@ -237,7 +167,7 @@ export function PaxStats({ posts, error }: Props) {
                 {kind === "attendance" ? (
                   <span className="text-xs text-ink-dim">
                     Q: {post.qic}
-                    {personIsQClient(post, person) ? " (you)" : ""}
+                    {personIsQ(post, person) ? " (you)" : ""}
                   </span>
                 ) : null}
               </li>
@@ -253,12 +183,6 @@ export function PaxStats({ posts, error }: Props) {
       ) : null}
     </div>
   );
-}
-
-function personIsQClient(post: StatsPost, person: string): boolean {
-  return post.qic
-    .split(/\s*(?:,|&|\/|\band\b)\s*/i)
-    .some((q) => q.trim().toLowerCase() === person.trim().toLowerCase());
 }
 
 function Field({
