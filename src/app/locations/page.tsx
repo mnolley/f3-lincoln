@@ -5,6 +5,7 @@ import { UpcomingBeatdowns } from "@/components/UpcomingBeatdowns";
 import { aos } from "@/content/aos";
 import { site } from "@/lib/site";
 import { fetchUpcomingBeatdowns } from "@/lib/slack/fetch-upcoming";
+import { fetchBeatdownWeather } from "@/lib/weather";
 
 export const metadata: Metadata = {
   title: "Locations & Schedule",
@@ -12,11 +13,12 @@ export const metadata: Metadata = {
     "F3 Lincoln AO Sparta — Mon/Wed/Fri 5:30–6:15 AM. Bootcamp midweek, Muscle Beach Fridays. Optional 5:00 AM pre-run.",
 };
 
-// Refresh upcoming Q claims from Slack about every 5 minutes
+// Refresh upcoming Q claims + weather about every 5 minutes
 export const revalidate = 300;
 
 export default async function LocationsPage() {
   const { slots, error } = await fetchUpcomingBeatdowns({ count: 3 });
+  const weatherByYmd = await fetchBeatdownWeather(slots.map((s) => s.ymd));
 
   return (
     <PageShell
@@ -25,7 +27,11 @@ export default async function LocationsPage() {
       intro="F3 Lincoln posts at one AO: Sparta. Workouts are always outdoors. Schedule here is read-only — claim Q spots in Slack via Paxminer."
     >
       <div className="space-y-10">
-        <UpcomingBeatdowns slots={slots} error={error} />
+        <UpcomingBeatdowns
+          slots={slots}
+          error={error}
+          weatherByYmd={weatherByYmd}
+        />
 
         <SlackCta
           label="Claim a Q spot"

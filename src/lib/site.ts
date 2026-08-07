@@ -67,6 +67,11 @@ export const paxMenu: PaxGroup[] = [
         href: "/stats",
         description: "Individual stats, top Qs, joiners — password protected",
       },
+      {
+        label: "Photo Gallery",
+        href: "/gallery",
+        description: "Real stills from @F3Lincoln — password protected",
+      },
     ],
   },
   {
