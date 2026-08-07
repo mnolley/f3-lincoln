@@ -23,7 +23,14 @@ export const site = {
   email: "",
   facebookUrl: "",
   instagramUrl: "",
-  twitterUrl: "",
+  /** Official region account on X */
+  twitterUrl: "https://x.com/F3Lincoln",
+  twitterHandle: "@F3Lincoln",
+  /**
+   * Optional full-bleed hero video montage (mp4/webm URL or /public path).
+   * When empty, the landing page uses the image montage from content/montage.ts.
+   */
+  heroVideoUrl: "",
 } as const;
 
 /** Primary nav — always visible */

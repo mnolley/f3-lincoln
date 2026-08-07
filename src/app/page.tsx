@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { HeroMontage } from "@/components/HeroMontage";
+import { heroMontageImages } from "@/content/montage";
 import { fiveCorePrinciples, site, threeFs } from "@/lib/site";
 
 export default function HomePage() {
@@ -9,7 +11,13 @@ export default function HomePage() {
     <div className="flex min-h-full flex-col">
       <Header />
       <main className="flex-1">
-        {/* Hero */}
+        {/* Media band — image montage now; set site.heroVideoUrl for video later */}
+        <HeroMontage
+          images={heroMontageImages}
+          videoUrl={site.heroVideoUrl || undefined}
+        />
+
+        {/* Hero copy */}
         <section className="relative overflow-hidden border-b border-gloom-border bg-gloom-panel">
           <div
             className="pointer-events-none absolute inset-0 opacity-30"
@@ -37,6 +45,19 @@ export default function HomePage() {
                 </Link>
               </div>
               <p className="mt-6 text-sm italic text-ink-dim">&ldquo;{site.motto}&rdquo;</p>
+              {site.twitterUrl ? (
+                <p className="mt-4 text-sm text-ink-dim">
+                  Follow the gloom on{" "}
+                  <a
+                    href={site.twitterUrl}
+                    className="font-display text-xs font-bold uppercase tracking-wide text-f3-red hover:underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {site.twitterHandle} ↗
+                  </a>
+                </p>
+              ) : null}
             </div>
             <div className="flex justify-center lg:justify-end">
               <div className="card-panel flex w-full max-w-xl flex-col items-center p-4 sm:max-w-2xl sm:p-6">
